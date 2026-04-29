@@ -130,6 +130,63 @@ Responde:
 
 ---
 
+## Lanzamiento Automático de Subagentes
+
+### Regla General: DETECTA y LANZA
+
+Este skill debe detectar automáticamente cuando una tarea NO es su especialidad (backend) y lanzar el agente apropiado.
+
+### Matriz de Detección y Lanzamiento
+
+| Tarea Detectada | Agente a Lanzar | Skill a Usar |
+|-----------------|-----------------|--------------|
+| **Diseño UI/Frontend** | task → ui-ux-pro-max | ui-ux-pro-max |
+| **Auditoría SEO** | task → seo-audit | seo-audit |
+| **Deploy Vercel** | task → vercel-expert | vercel-react-best-practices |
+| **Config Supabase** | task → supabase-expert | supabase-postgres-best-practices |
+| **Tests E2E** | task → testing-agent | (skill de testing) |
+| **Documentación** | task → docs-agent | (generar README) |
+| **DevOps/Infra** | task → devops-agent | (docker, k8s, etc.) |
+
+### Cómo Lanzar Automáticamente
+
+Cuando detectes una tarea que no es backend:
+
+```markdown
+# Auto-detección: [TAREA] detectada
+# Especialidad del agente: BACKEND
+# Acción: Lanzar subagente especializado
+
+task(
+    description="[Descripción de la tarea]",
+    prompt="""Eres un experto en [ÁREA]. 
+    
+    Contexto del proyecto: [nombre-proyecto]
+    Stack: [stack]
+    Requisitos específicos: [detalles]
+    
+    Ejecuta la tarea y reporta resultados.""",
+    subagent_type="general"
+)
+```
+
+### Ejemplo de Flujo Automático
+
+```
+Usuario: "Crea un e-commerce completo"
+
+→ Detector: "Esto requiere frontend + backend + DB + SEO + deploy"
+→ app-developer (backend): Implementa API, modelos, auth
+→ task (ui-ux-pro-max): Crea el frontend
+→ task (supabase): Configura DB
+→ task (seo-audit): Audita la página
+→ task (vercel): Deploy automático
+
+→ Resultado: Proyecto completo en producción
+```
+
+---
+
 ## Sistema de Memoria Segura (Encrypted)
 
 ### Información que puede almacenar
@@ -267,6 +324,17 @@ Al inicio de CADA proyecto, DEBES preguntar:
    - Tengo token de Vercel
    - Tengo credenciales de Supabase
    - No tengo ninguna / Primera vez
+
+8. **¿Quieres que haga el deploy completo?**
+   - Sí, completamente → Deploy automático a producción
+   - Solo el código → Sin deploy, solo generar archivos
+   - No lo sé → Explicar opciones
+
+9. **Si deploy completo, qué necesitas?**
+   - Solo GitHub → Subir código, vos deploy manual
+   - GitHub + Vercel → Deploy automático a Vercel
+   - GitHub + Vercel + Supabase → Full stack deploy completo
+   - Otro → Explicar
 ```
 
 ### Paso 2: Análisis y Asignación de Trabajo
@@ -308,20 +376,23 @@ Antes de escribir código, genera un SPEC.md que incluya:
 #### Frontend (delegar a ui-ux-pro-max)
 Para delegar el frontend, lanzar un task paralelo:
 
-```python
-# Pseudocódigo para lanzar agente paralelo
+```markdown
+<!-- Lanzar agente para frontend automáticamente -->
+Para crear el frontend, usar el tool task:
+
 task(
     description="Frontend de [nombre-proyecto]",
     prompt=f"""
-    Crear el frontend completo para {nombre_proyecto} usando:
+    Eres un experto en UI/UX. Crea el frontend completo para {nombre_proyecto}.
+    
+    Requisitos:
     - Stack: {frontend_stack}
     - Estilo: {estilo_solicitado}
     - Componentes: {lista_componentes}
-    - Color palette: {paleta_colores}
     - El backend está en: {ruta_backend}
     
-    Usar la skill ui-ux-pro-max para diseño profesional.
-    Mantener comunicación con el backend existente.
+    IMPORTANTE: Usa la skill ui-ux-pro-max para diseño profesional.
+    Mantén comunicación con el backend existente.
     """,
     subagent_type="general"
 )
@@ -337,14 +408,12 @@ Cuando ambos (backend y frontend) estén listos:
 
 ### Paso 6: Auditoría SEO Automática (RECOMENDADO)
 
-**Si seo-audit está disponible**, ejecutar auditoría post-desarrollo:
+**Si seo-audit está disponible**, ejecutar auditoría post-desarrollo usando el tool `task`:
 
-```python
-# Lanzar agente de auditoría SEO
+```
 task(
-    description=f"SEO Audit de {nombre_proyecto}",
-    prompt=f"""
-    Ejecutar auditoría SEO completa del proyecto en {ruta_proyecto}:
+    description="SEO Audit de [nombre-proyecto]",
+    prompt="Eres un experto en SEO. Ejecuta auditoría completa del proyecto en [ruta]:
     - Revisar index.html o página principal
     - Verificar meta tags (title, description, OG tags)
     - Comprobar estructura HTML semántica
@@ -352,11 +421,7 @@ task(
     - Revisar performance
     - Verificar Schema Markup si aplica
     
-    Generar reporte con:
-    - Hallazgos (buenos y malos)
-    - Recomendaciones de mejora
-    - Prioridad de fixes
-    """,
+    Generar reporte detallado con hallazgos y recomendaciones priorizadas.",
     subagent_type="general"
 )
 ```
@@ -364,6 +429,87 @@ task(
 **Después de la auditoría:**
 - Incluir resultados en el reporte final
 - Indicar claramente qué mejorías se recomiendan
+
+---
+
+### Paso 7: Deploy Automático a Vercel + Supabase
+
+**DETECCIÓN AUTOMÁTICA**: Si el usuario indica que usará Vercel + Supabase, seguir este flujo:
+
+#### 7.1 Verificar credenciales necesarias
+
+Al detectar "Vercel" + "Supabase", automáticamente preguntar:
+
+```markdown
+## 🚀 Deploy a Vercel + Supabase detectado
+
+Para hacer el deploy completo, necesito:
+
+### GitHub
+- [ ] Token de GitHub (con acceso repo)
+- [ ] Repo creado y configurado
+
+### Vercel
+- [ ] Token de Vercel
+- [ ] ID de Organización Vercel
+- [ ] ID del Proyecto Vercel (o crear nuevo)
+
+### Supabase
+- [ ] URL del proyecto Supabase
+- [ ] ANON_KEY (público)
+- [ ] SERVICE_ROLE_KEY (privado - para migraciones)
+
+### Base de datos
+- [ ] Schema de Prisma generado
+- [ ] Migraciones aplicadas a Supabase
+```
+
+#### 7.2 Generar configuración automáticamente
+
+**Archivos a generar:**
+
+| Archivo | Contenido |
+|---------|------------|
+| `vercel.json` | Config Vercel |
+| `.github/workflows/deploy.yml` | CI/CD para deploy |
+| `prisma/schema.prisma` | Schema con Supabase |
+| `.env.example` | Variables de entorno (sin valores sensibles) |
+| `supabase/migrate.sql` | Funciones SQL para Supabase |
+
+#### 7.3 Lanzar agente para deploy (si está disponible)
+
+Si el usuario tiene `vercel-react-best-practices`:
+
+```
+task(
+    description="Deploy a Vercel + Supabase",
+    prompt="Eres experto en Vercel y Supabase. Configurar deploy automático:
+    
+    1. Generar vercel.json optimizado
+    2. Generar GitHub Actions para CI/CD
+    3. Configurar environment variables en Vercel
+    4. Verificar que Prisma se conecte a Supabase
+    5. Probar que el deploy funciona
+    
+    Proyecto: [nombre]
+    Repo: [url-github]
+    Vercel: [project-id]
+    Supabase: [url]",
+    subagent_type="general"
+)
+```
+
+#### 7.4 Checklist final de deploy
+
+Antes de reportar "deploy completado", verificar:
+
+- [ ] Repo clonado en GitHub
+- [ ] Vercel connected al repo
+- [ ] Variables de entorno configuradas en Vercel
+- [ ] Deploy automático funciona (push triggers deploy)
+- [ ] Base de datos Supabase accesible
+- [ ] Prisma migrate ejecutado en producción
+- [ ] Página en producción y funcionando
 - Ofrecer aplicar las mejoras si el usuario lo desea
 
 ---
