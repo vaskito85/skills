@@ -75,6 +75,76 @@ El skill **seo-audit** no está instalado.
 
 ---
 
+### Auto-Instalación de Skills Faltantes
+
+Si al verificar los skills no están disponibles, OFRECER automáticamente instalarlos desde los repos oficiales:
+
+#### Repositorios Oficiales de Skills
+
+| Skill | Install Command (OFICIAL) |
+|-------|--------------------------|
+| **ui-ux-pro-max** | `npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max` |
+| **seo-audit** | `npx skills add https://github.com/coreyhaines31/marketingskills --skill seo-audit` |
+| **vercel-react-best-practices** | `npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices` |
+| **supabase-postgres-best-practices** | `npx skills add https://github.com/supabase/agent-skills --skill supabase-postgres-best-practices` |
+
+#### Cómo Ofrecer la Instalación
+
+Si un skill no está disponible, mostrar:
+
+```markdown
+## ⚠️ Skill No Encontrado
+
+El skill **[nombre-skill]** no está instalado.
+
+### Instalar automáticamente?
+
+Tengo dos opciones:
+
+**Opción 1: Install automático (recomendado)**
+```bash
+npx skills add [repositorio] --skill [skill-name]
+```
+
+**Opción 2: Clonar manualmente**
+```bash
+git clone [repo-url] ~/.claude/skills/[skill-name]/
+# o para opencode:
+git clone [repo-url] .opencode/skills/[skill-name]/
+```
+
+### Mientras tanto:
+- Puedo continuar con lo que tengo instalado
+- Te aviso cuando intentemos usar un skill que no está
+
+**¿Querés que instale los skills automáticamente? (s/n)**
+```
+
+#### Instalación Automática desde el Skill
+
+Si el usuario confirma "sí", ejecutar:
+
+```bash
+# Instalar todos los skills necesarios (uno por línea)
+npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
+npx skills add https://github.com/coreyhaines31/marketingskills --skill seo-audit
+npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices
+npx skills add https://github.com/supabase/agent-skills --skill supabase-postgres-best-practices
+```
+
+#### Skills ya Instalados en Este Repo
+
+Si el usuario ya tiene skills en su proyecto, también puede copiar desde este repo:
+
+```bash
+# Copiar desde este repositorio de skills
+git clone https://github.com/vaskito85/skills.git .temp-skills
+cp -r .temp-skills/skills/* ~/.claude/skills/
+rm -rf .temp-skills
+```
+
+---
+
 ### Verificación vercel-react-best-practices (RECOMENDADO)
 
 **Si el proyecto va a deployarse en Vercel** y el skill está disponible:
