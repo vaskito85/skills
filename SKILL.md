@@ -116,41 +116,43 @@ El skill **seo-audit** no está instalado.
 
 ### Auto-Instalación de Skills Faltantes
 
-Si al verificar los skills no están disponibles, OFRECER automáticamente instalarlos desde los repos oficiales:
+**REGLAS DE INSTALACIÓN:**
+
+1. **Si es OBLIGATORIO (ui-ux-pro-max)**: NO continuar hasta que el usuario instale o confirme continuar sin él
+2. **Si es RECOMENDADO**: Ofrecer instalar, pero continuar si el usuario dice que no
 
 #### Repositorios Oficiales de Skills
 
-| Skill | Install Command (OFICIAL) |
-|-------|--------------------------|
+| Skill | Install Command |
+|-------|-----------------|
 | **ui-ux-pro-max** | `npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max` |
 | **seo-audit** | `npx skills add https://github.com/coreyhaines31/marketingskills --skill seo-audit` |
-| **vercel-react-best-practices** | `npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices` |
-| **supabase-postgres-best-practices** | `npx skills add https://github.com/supabase/agent-skills --skill supabase-postgres-best-practices` |
+| **vercel-react** | `npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices` |
+| **supabase** | `npx skills add https://github.com/supabase/agent-skills --skill supabase-postgres-best-practices` |
 
-#### Cómo Ofrecer la Instalación
-
-Si un skill no está disponible, mostrar:
+#### Plantilla de Instalación (USAR ESTA)
 
 ```markdown
-## ⚠️ Skill No Encontrado
+## 📦 Skills a Instalar
 
-El skill **[nombre-skill]** no está instalado.
+Los siguientes skills no se encontraron:
 
-### Instalar automáticamente?
+| Skill | Status | Install |
+|-------|--------|---------|
+| ui-ux-pro-max | ❌ NO | [INSTALL] |
+| seo-audit | ⚠️ NO | [INSTALL] |
+| vercel-react | ⚠️ NO | [INSTALL] |
+| supabase | ⚠️ NO | [INSTALL] |
 
-Tengo dos opciones:
+[CLICK EN "INSTALL"] = Ejecutar el comando npx
 
-**Opción 1: Install automático (recomendado)**
-```bash
-npx skills add [repositorio] --skill [skill-name]
+**Antes de continuar, necesito tu respuesta:**
+- ¿Instalo los skills que faltan?
+- ¿Continúo solo con los que tengo?
+- ¿Cuáles instalo y cuáles no?
 ```
 
-**Opción 2: Clonar manualmente**
-```bash
-git clone [repo-url] ~/.claude/skills/[skill-name]/
-# o para opencode:
-git clone [repo-url] .opencode/skills/[skill-name]/
-```
+**IMPORTANT: No continuar hasta tener respuesta del usuario.**
 
 ### Mientras tanto:
 - Puedo continuar con lo que tengo instalado
@@ -239,44 +241,112 @@ Responde:
 
 ---
 
-## Lanzamiento Automático de Subagentes
+## Lanzamiento de Subagentes - MODO SECUENCIAL
 
-### Regla General: DETECTA → VERIFICA → LANZA
+### ⚠️ REGLA CRÍTICA: NUNCA LANZAR EN PARALELO
 
-**ANTES de lanzar cualquier subagente, DEBES:**
+**Orden obligatorio de ejecución:**
 
-1. **Detectar** qué tipo de tarea es (frontend, SEO, deploy, etc.)
-2. **Verificar** que el skill necesario esté disponible
-3. **Lanzar** el agente especializado solo si está disponible
-
-### Matriz de Detección y Lanzamiento
-
-| Tarea | Skill Necesario | Acción Si Está | Acción Si NO Está |
-|-------|-----------------|----------------|-------------------|
-| **Diseño UI/Frontend** | ui-ux-pro-max | ✅ Lanzar subagente | ⚠️ Advertir + crear frontend básico |
-| **Auditoría SEO** | seo-audit | ✅ Lanzar auditoría | ⚠️ Advertir + hacer auditoría manual básica |
-| **Deploy Vercel** | vercel-react-best-practices | ✅ Lanzar deploy optimizado | ⚠️ Advertir + hacer deploy estándar |
-| **Config Supabase** | supabase-postgres-best-practices | ✅ Lanzar config optimizada | ⚠️ Advertir + hacer config estándar |
-
-### ⚠️ IMPORTANTE: Verificar antes de lanzar
-
-**Cada vez que intents lanzar un subagente, DECIRLE al usuario:**
-
-```markdown
-## 🚀 Detecté que necesitás [Frontend/SEO/Deploy]
-
-Verificando si [skill-name] está disponible...
-- [skill-name]: [DISPONIBLE / NO DISPONIBLE]
-
-[Si disponible]: ✅ Lanzando subagente...
-[Si NO disponible]: ⚠️ [Skill] no está instalado. 
-
-Opciones:
-1. Install ahora → `npx skills add [repo] --skill [skill]`
-2. Continuar sin él → Crearé [frontend/auditoría/deploy] básico/a
+```
+1. BACKEND (app-developer) → Terminar completamente
+         ↓
+2. FRONTEND (ui-ux-pro-max) → Esperar a que termine el backend
+         ↓
+3. SEO AUDIT (seo-audit) → Esperar a que termine el frontend
+         ↓
+4. DEPLOY (vercel) → Esperar a que termine SEO
 ```
 
-**NO omitir esta verificación - es obligatorio告知 al usuario.**
+**NUNCA hacer:**
+- ❌ Lanzar frontend y backend al mismo tiempo
+- ❌ Lanzar SEO mientras backend está corriendo
+- ❌ Lanzar deploy mientras frontend no terminó
+
+### Verificación + Instalación de Skills (ANTES de todo)
+
+**AL INICIAR, DEBES:**
+
+```markdown
+## 🔍 VERIFICACIÓN INICIAL DE SKILLS
+
+Voy a buscar los skills necesarios en los siguientes directorios:
+- .opencode/skills/
+- .claude/skills/
+- .agents/skills/
+- ~/.claude/skills/
+- ~/.config/opencode/skills/
+
+### Skills a verificar:
+1. ui-ux-pro-max (OBLIGATORIO)
+2. seo-audit (RECOMENDADO)
+3. vercel-react-best-practices (RECOMENDADO)
+4. supabase-postgres-best-practices (RECOMENDADO)
+
+[Para cada skill no encontrado, MOSTRAR:]
+```
+
+**Para cada skill NO ENCONTRADO, mostrar esto:**
+
+```markdown
+### ⚠️ [SKILL-NAME] NO ENCONTRADO
+
+Este skill es [OBLIGATORIO/RECOMENDADO] para el proyecto.
+
+**¿Querés que lo instale ahora?**
+
+Opciones:
+1. ✅ SÍ, instalar ahora → Ejecutar: npx skills add [URL]
+2. ⏭️ NO, continuar sin él → [Advertir limitaciones]
+3. 🔄 INSTALAR DESPUÉS → Continuar, instalar al final
+```
+
+**SOLO CONTINUAR después de que el usuario responda.**
+
+### Ejemplo de Flujo Completo (COPIAR ESTO)
+
+```
+---
+
+## 🚀 INICIANDO PROYECTO: [NOMBRE]
+
+### Paso 1: Verificación de Skills (OBLIGATORIO)
+
+[Ejecutar búsqueda en todos los directorios]
+
+Resultados:
+- ui-ux-pro-max: [ENCONTRADO/NO]
+- seo-audit: [ENCONTRADO/NO]
+- vercel-react-best-practices: [ENCONTRADO/NO]
+- supabase-postgres-best-practices: [ENCONTRADO/NO]
+
+[Si hay skills faltantes, mostrar menú de instalación]
+[ESPERAR respuesta del usuario]
+
+### Paso 2: BACKEND (app-developer)
+[Crear backend completamente]
+
+✅ Backend completado
+
+### Paso 3: FRONTEND
+[Verificar ui-ux-pro-max disponible]
+[Si está: lanzar subagente][Si no: crear frontend básico]
+
+✅ Frontend completado
+
+### Paso 4: SEO AUDIT
+[Verificar seo-audit disponible]
+[Si está: lanzar subagente][Si no: auditoría manual básica]
+
+✅ SEO Audit completado
+
+### Paso 5: DEPLOY (si aplica)
+[Verificar vercel-react-best-practices disponible]
+[Si está: lanzar subagente][Si no: deploy estándar]
+
+✅ Deploy completado
+
+---
+```
 
 ### Cómo Lanzar Automáticamente
 
