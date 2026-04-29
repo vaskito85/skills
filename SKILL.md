@@ -12,45 +12,84 @@ description: |
 
 ### Paso 0: Verificar Skills (OBLIGATORIO)
 
-Al iniciar, DEBES verificar que estén disponibles:
+**AL INICIAR CUALQUIER PROYECTO, DEBES HACER ESTO PRIMERO:**
 
-1. **ui-ux-pro-max** → Para diseño de frontend profesional
-2. **seo-audit** → Para auditoría SEO post-desarrollo
-3. **vercel-react-best-practices** → Para deploy en Vercel (RECOMENDADO)
-4. **supabase-postgres-best-practices** → Para Supabase + Prisma (RECOMENDADO)
+1. Buscar en los directorios de skills del proyecto:
+   - `.opencode/skills/[nombre]/SKILL.md`
+   - `.claude/skills/[nombre]/SKILL.md`
+   - `.agents/skills/[nombre]/SKILL.md`
 
-**Cómo verificar (en tiempo de ejecución):**
-```python
-# Pseudocódigo de verificación
-try:
-    ui_ux_skill = load_skill("ui-ux-pro-max")
-    seo_skill = load_skill("seo-audit")
-    ui_ux_available = bool(ui_ux_skill)
-    seo_available = bool(seo_skill)
-except:
-    ui_ux_available = False
-    seo_available = False
-```
+2. Buscar en directorios globales:
+   - `~/.opencode/skills/[nombre]/SKILL.md`
+   - `~/.claude/skills/[nombre]/SKILL.md`
+   - `~/.config/opencode/skills/[nombre]/SKILL.md`
 
-### Verificación ui-ux-pro-max
+3. **SI NO ENCUENTRA UN SKILL**, aplicar estas reglas:
 
-**Si ui-ux-pro-max está disponible**: ✅ Continuar con normalidad
+| Skill | Si NO está | Acción |
+|-------|-----------|--------|
+| **ui-ux-pro-max** | ❌ DETENER | Mostrar cómo instalarlo y pedir confirmación |
+| **seo-audit** | ⚠️ ADVERTENCIA | Informar que no habrá auditoría SEO |
+| **vercel-react** | ⚠️ ADVERTENCIA | Informar que no habrá optimizaciones de Vercel |
+| **supabase-postgres** | ⚠️ ADVERTENCIA | Informar que no habrá optimizaciones de Supabase |
 
-**Si ui-ux-pro-max NO está disponible**: ❌ **DETENER** y mostrar:
+**Plantilla de verificación (copiar y usar):**
 
 ```markdown
-## ⚠️ Skill Requerido No Encontrado: ui-ux-pro-max
+## 🔍 Verificación de Skills
 
-Para crear aplicaciones web con frontend profesional, necesitas instalar el skill **ui-ux-pro-max**.
+Buscando skills en el proyecto y globalmente...
 
-### Cómo instalar:
-1. Asegúrate de que existe: `.agents/skills/ui-ux-pro-max/`
-2. Verifica que contiene `SKILL.md`
+### Resultado de búsqueda:
+- ui-ux-pro-max: [ENCONTRADO / NO ENCONTRADO]
+- seo-audit: [ENCONTRADO / NO ENCONTRADO]
+- vercel-react-best-practices: [ENCONTRADO / NO ENCONTRADO]
+- supabase-postgres-best-practices: [ENCONTRADO / NO ENCONTRADO]
 
-### Mientras tanto:
-- Puedo crear el BACKEND completo (APIs, DB, auth)
-- El FRONTEND requerirá que instales ui-ux-pro-max primero
+### [SIGUIENTE SEGÚN RESULTADO]
 ```
+
+### Verificación ui-ux-pro-max (OBLIGATORIO - BLOQUEANTE)
+
+**PASOS A SEGUIR:**
+
+1. **Primero**: Buscar en `.opencode/skills/ui-ux-pro-max/SKILL.md`
+2. **Si no está**: Buscar en `.claude/skills/ui-ux-pro-max/SKILL.md`
+3. **Si no está**: Buscar en `.agents/skills/ui-ux-pro-max/SKILL.md`
+4. **Si no está**: Buscar en `~/.claude/skills/ui-ux-pro-max/SKILL.md`
+
+**SI DESPUÉS DE BUSCAR EN LOS 4 DIRECTORIOS NO ESTÁ**: 
+
+❌ **DETENER TODO** y mostrar este mensaje obligatorio:
+
+```markdown
+## 🛑 SKILL OBLIGATORIO NO ENCONTRADO: ui-ux-pro-max
+
+Para continuar necesito que instalés este skill.
+
+### 📥 Install con npx:
+```bash
+npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
+```
+
+### 📥 Install manual:
+```bash
+# Opción 1: Copiar desde este repo de skills
+git clone https://github.com/vaskito85/skills.git .temp-skills
+cp -r .temp-skills/skills/ui-ux-pro-max ~/.claude/skills/
+
+# Opción 2: Desde repo oficial
+git clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill ~/.claude/skills/ui-ux-pro-max
+```
+
+### ⚠️ Mientras tanto:
+- Puedo crear el BACKEND completo (APIs, DB, auth)
+- **NO PUEDO CREAR FRONTEND** sin este skill
+
+**¿Querés instalar ui-ux-pro-max ahora? (responde sí para continuar)**
+```
+
+**Solo continuar cuando el usuario confirme que tiene ui-ux-pro-max instalado.**
 
 ---
 
@@ -202,21 +241,42 @@ Responde:
 
 ## Lanzamiento Automático de Subagentes
 
-### Regla General: DETECTA y LANZA
+### Regla General: DETECTA → VERIFICA → LANZA
 
-Este skill debe detectar automáticamente cuando una tarea NO es su especialidad (backend) y lanzar el agente apropiado.
+**ANTES de lanzar cualquier subagente, DEBES:**
+
+1. **Detectar** qué tipo de tarea es (frontend, SEO, deploy, etc.)
+2. **Verificar** que el skill necesario esté disponible
+3. **Lanzar** el agente especializado solo si está disponible
 
 ### Matriz de Detección y Lanzamiento
 
-| Tarea Detectada | Agente a Lanzar | Skill a Usar |
-|-----------------|-----------------|--------------|
-| **Diseño UI/Frontend** | task → ui-ux-pro-max | ui-ux-pro-max |
-| **Auditoría SEO** | task → seo-audit | seo-audit |
-| **Deploy Vercel** | task → vercel-expert | vercel-react-best-practices |
-| **Config Supabase** | task → supabase-expert | supabase-postgres-best-practices |
-| **Tests E2E** | task → testing-agent | (skill de testing) |
-| **Documentación** | task → docs-agent | (generar README) |
-| **DevOps/Infra** | task → devops-agent | (docker, k8s, etc.) |
+| Tarea | Skill Necesario | Acción Si Está | Acción Si NO Está |
+|-------|-----------------|----------------|-------------------|
+| **Diseño UI/Frontend** | ui-ux-pro-max | ✅ Lanzar subagente | ⚠️ Advertir + crear frontend básico |
+| **Auditoría SEO** | seo-audit | ✅ Lanzar auditoría | ⚠️ Advertir + hacer auditoría manual básica |
+| **Deploy Vercel** | vercel-react-best-practices | ✅ Lanzar deploy optimizado | ⚠️ Advertir + hacer deploy estándar |
+| **Config Supabase** | supabase-postgres-best-practices | ✅ Lanzar config optimizada | ⚠️ Advertir + hacer config estándar |
+
+### ⚠️ IMPORTANTE: Verificar antes de lanzar
+
+**Cada vez que intents lanzar un subagente, DECIRLE al usuario:**
+
+```markdown
+## 🚀 Detecté que necesitás [Frontend/SEO/Deploy]
+
+Verificando si [skill-name] está disponible...
+- [skill-name]: [DISPONIBLE / NO DISPONIBLE]
+
+[Si disponible]: ✅ Lanzando subagente...
+[Si NO disponible]: ⚠️ [Skill] no está instalado. 
+
+Opciones:
+1. Install ahora → `npx skills add [repo] --skill [skill]`
+2. Continuar sin él → Crearé [frontend/auditoría/deploy] básico/a
+```
+
+**NO omitir esta verificación - es obligatorio告知 al usuario.**
 
 ### Cómo Lanzar Automáticamente
 
