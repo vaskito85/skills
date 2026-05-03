@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Crea un dashboard web para mostrar métricas de ventas de una tienda. Necesita mostrar: totales de ventas diarias, gráfico de tendencia semanal, lista de productos más vendidos, y un selector de rango de fechas. Debe ser responsive y tener un diseño limpio.",
-      "expected_output": "Una aplicación web completa (dashboard) con gráficos, datos de ventas, selector de fechas y diseño responsive. Debe incluir SPEC.md, código funcional, tests básicos, y poder ejecutarse.",
+      "expected_output": "Aplicación web completa (dashboard) con gráficos, datos de ventas, selector de fechas y diseño responsive. Debe incluir SPEC.md, código funcional, tests básicos, y poder ejecutarse.",
       "files": []
     },
     {
@@ -17,6 +17,36 @@
       "id": 3,
       "prompt": "Build me a REST API for user management with JWT authentication. Needs endpoints for register, login, get user profile, and update profile. Include proper error handling and validation.",
       "expected_output": "API REST completa con autenticación JWT, endpoints de gestión de usuarios, validación, manejo de errores. Debe incluir SPEC.md, código, tests y poder ejecutarse.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Tengo una API Express que funciona local pero da errores 500 en producción. El log muestra 'ECONNREFUSED' en la conexión a la base de datos. Necesito que diagnosticues el problema y propongas una solución.",
+      "expected_output": "Diagnóstico del problema de conexión a DB en producción, solución propuesta, verificación de variables de entorno, y código corregido.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Mi aplicación Node.js tiene problemas de rendimiento - las respuestas API tardan más de 2 segundos. Necesito que optimices el código, measures el rendimiento y propongas mejoras.",
+      "expected_output": "Análisis de rendimiento, identificación de cuellos de botella, optimizaciones implementadas (caching, índices, query optimization), y métricas de mejora.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Tengo un backend Express básico y quiero agregar autenticación con JWT, validación de datos con Zod, manejo de errores centralizado, y tests con Jest. Expandí el proyecto.",
+      "expected_output": "Proyecto expandido con auth JWT, validación con Zod, middleware de errores, tests de integración, y documentación actualizada.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Configura Docker para mi aplicación Node.js con Express y PostgreSQL. Necesito Dockerfile, docker-compose.yml con health checks, y script de CI/CD para GitHub Actions.",
+      "expected_output": "Dockerfile optimizado, docker-compose.yml con db y app, .dockerignore, GitHub Actions workflow para CI/CD, y documentación de uso.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Crea una API REST para un sistema de reservas de restaurante. Necesita: mesas, reservas, clientes, disponibilidad por fecha/hora, y notifications por email. Usa Node.js + Prisma + PostgreSQL.",
+      "expected_output": "API REST completa con modelos Prisma, endpoints CRUD, disponibilidad, sistema de reservas, integración con email (mock), tests, y SPEC.md.",
       "files": []
     }
   ]
